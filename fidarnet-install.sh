@@ -2,7 +2,7 @@
 
 # ------------ CONFIGS -----------
 REPO_URL_GUACAMOLE_SERVER="https://github.com/apache/guacamole-server.git"
-REPO_URL_GUACAMOLE_CLIENT="https://github.com/FID-PAM/fidarnet.git"
+REPO_URL_GUACAMOLE_CLIENT="https://github.com/yasin-pro/fidranet.git"
 TARGET_DIR_GUACAMOLE_SERVER="guacamole-server"
 WAR_NAME="fidarnet.war"
 WEBAPPS_DIR="/opt/tomcat/webapps/"
