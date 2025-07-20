@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ------------ CONFIGS -----------
-REPO_URL_GUACAMOLE_CLIENT="https://github.com/FID-PAM/fidarnet.git"
+REPO_URL_GUACAMOLE_CLIENT="https://github.com/yasin-pro/fidranet.git"
 WAR_NAME="fidarnet.war"
 WEBAPPS_DIR="/opt/tomcat/webapps"
 
