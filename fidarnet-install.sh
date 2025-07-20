@@ -2,7 +2,7 @@
 
 # ------------ CONFIGS -----------
 REPO_URL_GUACAMOLE_SERVER="https://github.com/apache/guacamole-server.git"
-REPO_URL_GUACAMOLE_CLIENT="https://github.com/yasin-pro/fidranet.git"
+REPO_URL_GUACAMOLE_CLIENT="https://github.com/yasin-pro/fidarnet.git"
 TARGET_DIR_GUACAMOLE_SERVER="guacamole-server"
 WAR_NAME="fidarnet.war"
 WEBAPPS_DIR="/opt/tomcat/webapps/"
@@ -17,7 +17,6 @@ DB_NAME="fidarnet_db"
 DB_USER="F1darnet@dmin_user"
 DB_PASS="F1darnetP@ssMss@P_user"
 ADMIN_USER="F1darnetP@Madmin"
-ADMIN_PASS="P@ssw0rdF1d@rn3t2024!#"
 
 RED="\e[31m"; GREEN="\e[32m"; YELLOW="\e[33m"; CYAN="\e[36m"; RESET="\e[0m"
 
@@ -562,13 +561,9 @@ echo -e "${GREEN}JDBC extension setup and schema import finished!${RESET}"
 
 # --------- AUTO CREATE ADMIN USER IN DATABASE ----------
 
-# Generate salt and hash
-SALT=$(openssl rand -hex 8)
-HASH=$(echo -n "${ADMIN_PASS}${SALT}" | sha256sum | awk '{print $1}')
 
-echo -e "${CYAN}Creating or updating Guacamole admin user in the database...${RESET}"
+echo -e "${CYAN}Creating or updating Fidarnet admin user in the database...${RESET}"
 
-# (1) If old admin exists (e.g., guacadmin), rename to new admin username
 OLD_ADMIN="guacadmin"
 mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" -N -s -e "
     UPDATE guacamole_entity 
@@ -576,39 +571,11 @@ mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" -N -s -e "
     WHERE name = '$OLD_ADMIN' AND type = 'USER';
 "
 
-# (2) Get entity_id for the admin user, insert if not exists
-ENTITY_ID=$(mysql -u"$DB_USER" -p"$DB_PASS" -N -s -e "
-    SELECT entity_id FROM guacamole_entity WHERE name='$ADMIN_USER' AND type='USER';
-" "$DB_NAME")
 
-if [ -z "$ENTITY_ID" ]; then
-    ENTITY_ID=$(mysql -u"$DB_USER" -p"$DB_PASS" -N -s -e "
-        INSERT INTO guacamole_entity (name, type) VALUES ('$ADMIN_USER', 'USER');
-        SELECT LAST_INSERT_ID();
-    " "$DB_NAME")
-    echo -e "${GREEN}Inserted into guacamole_entity, entity_id: $ENTITY_ID${RESET}"
-else
-    echo -e "${YELLOW}User already exists (entity_id: $ENTITY_ID), updating password...${RESET}"
-fi
-
-# (3) Always update or insert user info
-mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" <<SQL
-INSERT INTO guacamole_user (entity_id, password_hash, password_salt, password_date, disabled, expired)
-VALUES ($ENTITY_ID, UNHEX('$HASH'), UNHEX('$SALT'), NOW(), 0, 0)
-ON DUPLICATE KEY UPDATE
-    password_hash=UNHEX('$HASH'), password_salt=UNHEX('$SALT'), password_date=NOW(), disabled=0, expired=0;
-SQL
-
-# (4) Grant administrator permission if not already present
-mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" <<SQL
-INSERT IGNORE INTO guacamole_system_permission (entity_id, permission)
-VALUES ($ENTITY_ID, 'ADMINISTER');
-SQL
-
-echo -e "${GREEN}Guacamole admin user '$ADMIN_USER' has been created or updated with admin rights.${RESET}"
+echo -e "${GREEN}Guacamole admin user 'guacadmin' has been created or updated with admin rights.${RESET}"
 echo -e "------------------------------------"
 echo -e "Username: $ADMIN_USER"
-echo -e "Password: $ADMIN_PASS"
+echo -e "Password: guacadmin"
 echo -e "------------------------------------"
 
 
